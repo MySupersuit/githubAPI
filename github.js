@@ -40,21 +40,54 @@ function userSearch() {
 	Gh3.Search.users({
       q: '+language:Python+location:Ireland',
       sort: 'followers',
-    }, {per_page: 50}, function (err,users) {
+    }, {per_page: 1}, function (err,users) {
       if (err) {throw 'ouch...'}
 
-      console.log(users);
-      _.each(users, function(user) {
-        $("#user").append(
-          $('<li/>').append(
-            $('<a/>')
-              .attr('href', user.html_url)
-              .text(user.login)
-          )
-      );
-      })
+      //console.log(users);
+
+    	var user = users[0];
+
+    	console.log(user);
+    	var userRepo = new Gh3.Repositories(user);
+
+    	userRepo.fetch({page:1,per_page:1,direction : "desc"},"next",function(err, res) {
+    		if (err) {
+    			throw "ouch..."
+    		}
+
+    		var repo = res.repositories[0];
+
+
+
+    		console.log(repo);
+    	});
+
+
+
+      // _.each(users, function(user) {
+      //   $("#user").append(
+      //     $('<li/>').append(
+      //       $('<a/>')
+      //         .attr('href', user.html_url)
+      //         .text(user.login)
+      //     )
+      // );
+      // })
     });
 }
 
 
-userSearch();
+// seems good (except first one)
+// for each repo impact vs churn per top collaborator?
+//visualisation for each repo?
+
+// then best coders/ see what langauge are most popular among the "best" coders
+
+Gh3.Search.repos({
+	q: 'size:>=100000',
+	sort: 'forks',
+	order: 'desc'
+}, {per_page: 50}, function(err, repos) {
+	console.log(repos);
+});
+
